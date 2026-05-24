@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inter CV Generator – CSC336 Web Technologies</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Inter <span>CV</span> Generator</div>
+  <span class="topbar-badge"><i class="fas fa-university me-1"></i>CSC336 Web Technologies &nbsp;·&nbsp; Spring 2026</span>
+</header>
+
+<div class="app-grid">
+
+<!-- ═══ LEFT: FORM ═══ -->
+<div class="panel panel-left">
+
+  <p class="sec-hd">Upload Profile Picture</p>
+  <div class="photo-zone mb-3" id="photoZone">
+    <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)"/>
+    <img id="photoPreview" src="" alt="Profile"/>
+    <div class="upload-hint" id="uploadHint">
+      <i class="fas fa-camera"></i>Click to upload photo
+    </div>
+  </div>
+
+  <p class="sec-hd">Personal Information</p>
+  <div class="mb-2">
+    <label>Full Name</label>
+    <input type="text" class="form-control" id="fullName" placeholder="Full Name" oninput="liveUpdate()"/>
+  </div>
+  <div class="mb-2">
+    <label>Job Title / Profession</label>
+    <input type="text" class="form-control" id="jobTitle" placeholder="e.g. Software Engineer" oninput="liveUpdate()"/>
+  </div>
+  <div class="row g-2 mb-2">
+    <div class="col-6"><label>Email</label><input type="email" class="form-control" id="email" placeholder="Email" oninput="liveUpdate()"/></div>
+    <div class="col-6"><label>Phone</label><input type="text" class="form-control" id="phone" placeholder="Phone" oninput="liveUpdate()"/></div>
+  </div>
+  <div class="row g-2 mb-2">
+    <div class="col-6"><label>Date of Birth</label><input type="text" class="form-control" id="dob" placeholder="DD/MM/YYYY"/></div>
+    <div class="col-6"><label>Gender</label>
+      <select class="form-select" id="gender"><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label>Location <small class="text-muted">(for map)</small></label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+      <input type="text" class="form-control" id="location" placeholder="e.g. Lahore, Pakistan" oninput="liveUpdate();scheduleMap()"/>
+      <button class="btn btn-outline-primary btn-sm" onclick="locateMe()" title="Detect my location"><i class="fas fa-crosshairs"></i></button>
+    </div>
+  </div>
+
+  <hr class="div"/>
+  <div class="sec-row">
+    <span class="sec-hd">Education</span>
+    <button class="btn-dash btn-dash-sm" onclick="addEdu()"><i class="fas fa-plus"></i></button>
+  </div>
+  <div id="eduList"></div>
+
+  <hr class="div"/>
+  <div class="sec-row">
+    <span class="sec-hd">Work Experience</span>
+    <button class="btn-dash btn-dash-sm" onclick="addExp()"><i class="fas fa-plus"></i></button>
+  </div>
+  <div id="expList"></div>
+
+  <hr class="div"/>
+  <p class="sec-hd">Skills</p>
+  <div class="skill-wrap" id="skillWrap"></div>
+  <div class="skill-row">
+    <input type="text" class="form-control" id="skillInput" placeholder="Type skill and press Enter"/>
+    <button class="btn btn-primary btn-sm px-3" onclick="addSkill()"><i class="fas fa-plus"></i> Add</button>
+  </div>
+
+  <hr class="div"/>
+  <p class="sec-hd">Professional Summary</p>
+  <textarea class="form-control mb-3" id="summary" rows="3" placeholder="Write a short professional summary..." oninput="liveUpdate()"></textarea>
+
+  <div class="gen-row">
+    <button class="btn-gen btn-g-word" onclick="exportCV()"><i class="fas fa-file-word"></i> Word</button>
+    <button class="btn-gen btn-g-pdf" onclick="exportCV()"><i class="fas fa-file-pdf"></i> PDF</button>
+  </div>
+  <button class="btn-dash mt-2" onclick="resetAll()"><i class="fas fa-redo"></i> Reset Form</button>
+  <br/><br/>
+</div>
+
+<!-- ═══ MIDDLE: PREVIEW ═══ -->
+<div class="panel panel-mid">
+
+  <!-- Template Picker -->
+  <div style="background:var(--white);border-radius:var(--radius);padding:13px 15px;margin-bottom:12px;box-shadow:var(--shadow);">
+    <p class="sec-hd" style="margin:0 0 9px;">Select CV Template</p>
+    <div class="tpl-scroll">
+      <div class="tpl-card active" onclick="setTpl(0,this)">
+        <div class="tpl-mini"><div class="h h0"><div class="bar wh w7"></div><div class="bar wh w5"></div></div><div class="b"><div class="bar gr w9"></div><div class="bar gr w7"></div><div class="bar gr w5"></div></div></div>
+        <div class="tpl-nm">Template 1</div><div class="sel-tick">✓ Selected</div>
+      </div>
+      <div class="tpl-card" onclick="setTpl(1,this)">
+        <div class="tpl-mini"><div class="h h1"><div class="bar wh w7"></div><div class="bar wh w5"></div></div><div class="b"><div class="bar gr w9"></div><div class="bar gr w7"></div><div class="bar gr w5"></div></div></div>
+        <div class="tpl-nm">Template 2</div><div class="sel-tick">✓ Selected</div>
+      </div>
+      <div class="tpl-card" onclick="setTpl(2,this)">
+        <div class="tpl-mini"><div class="h h2"><div class="bar ac w7"></div><div class="bar ac w5"></div></div><div class="b"><div class="bar gr w9"></div><div class="bar gr w7"></div><div class="bar gr w5"></div></div></div>
+        <div class="tpl-nm">Template 3</div><div class="sel-tick">✓ Selected</div>
+      </div>
+      <div class="tpl-card" onclick="setTpl(3,this)">
+        <div class="tpl-mini"><div class="h h3"><div class="bar wh w7"></div><div class="bar wh w5"></div></div><div class="b"><div class="bar gr w9"></div><div class="bar gr w7"></div><div class="bar gr w5"></div></div></div>
+        <div class="tpl-nm">Template 4</div><div class="sel-tick">✓ Selected</div>
+      </div>
+      <div class="tpl-card" onclick="setTpl(4,this)">
+        <div class="tpl-mini"><div class="h h4"><div class="bar wh w7"></div><div class="bar wh w5"></div></div><div class="b"><div class="bar gr w9"></div><div class="bar gr w7"></div><div class="bar gr w5"></div></div></div>
+        <div class="tpl-nm">Template 5</div><div class="sel-tick">✓ Selected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CV Preview Card -->
+  <div class="cv-card" id="cvCard">
+    <div class="empty-state" id="emptyState">
+      <i class="fas fa-id-card-alt"></i>
+      <p>Fill in your details on the left<br/>to preview your CV here</p>
+    </div>
+    <div id="cvOutput" style="display:none;"></div>
+  </div>
+
+</div>
+
+<!-- ═══ RIGHT: MAP + INFO ═══ -->
+<div class="panel panel-right">
+
+  <p class="sec-hd" style="margin-top:0;">Your Location</p>
+  <div class="map-wrap">
+    <div class="map-ph" id="mapPh"><i class="fas fa-map-marked-alt"></i><span>Enter location to see map</span></div>
+    <div id="mapEmbed" style="display:none;"><iframe id="mapFrame" src="" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+  </div>
+  <div id="locMsg"></div>
+  <button class="btn-maps" id="btnMaps" onclick="openMaps()" style="display:none;"><i class="fas fa-external-link-alt"></i> Open in Google Maps</button>
+
+  <hr class="div"/>
+  <p class="sec-hd">Quick Stats</p>
+  <div class="stat-card"><div class="stat-icon" style="background:#eff6ff;color:var(--accent);"><i class="fas fa-graduation-cap"></i></div><div><div class="stat-lbl">Education</div><div class="stat-val" id="statEdu">0 entries</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#f0fdf4;color:#15803d;"><i class="fas fa-briefcase"></i></div><div><div class="stat-lbl">Experience</div><div class="stat-val" id="statExp">0 entries</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#fdf4ff;color:#7e22ce;"><i class="fas fa-tools"></i></div><div><div class="stat-lbl">Skills</div><div class="stat-val" id="statSkills">0 skills</div></div></div>
+
+
+</div>
+
+</div><!-- /app-grid -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
